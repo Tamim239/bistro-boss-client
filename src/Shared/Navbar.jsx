@@ -4,8 +4,8 @@ export const Navbar = () => {
 
     const navOptions = <>
     <li><NavLink to="/">Home</NavLink></li>
-    <li><NavLink to="/">About</NavLink></li>
-    <li><NavLink to="/">Home</NavLink></li>
+    <li><NavLink to="menu">Our Menu</NavLink></li>
+    <li><NavLink to="order">Our Shop</NavLink></li>
     </>
 
 

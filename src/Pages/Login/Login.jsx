@@ -1,35 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
 import { useAuth } from '../../Hook/useAuth';
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2'
 
 export const Login = () => {
-const captchaRef = useRef(null);
 const [disabled,  setDisabled] = useState(true);
-const {createUser} = useAuth()
+const {signIn} = useAuth()
+const navigate = useNavigate()
+const location = useLocation()
+
+const from = location.state?.from?.pathname || '/';
 
     useEffect(()=>{
-        loadCaptchaEnginge(6); 
+        loadCaptchaEnginge(6);  
     },[])
 
-    
     const handleSubmit = e =>{
         e.preventDefault();
         const form = e.target;
         const email = form.email.value;
         const password = form.password.value;
         console.log(email, password)
-        createUser(email, password)
+        signIn(email, password)
         .then(res=>{
           console.log(res.user)
+          Swal.fire({
+            title: 'user Login successfully.',
+            showClass:{
+              popup: 'animate_animated animate_fadeInDown'
+            },
+            hideClass:{
+              popup: 'animate_animated animate_fadeOutUp'
+            },
+        });
+        navigate(from, {replace: true});
         })
         .catch(err =>{
           console.log(err.message)
         })
     }
 
-    const handleCaptcha = () =>{
-      const user_captcha_value = captchaRef.current.value;
+    const handleCaptcha = (e) =>{
+      const user_captcha_value = e.target.value;
       console.log(user_captcha_value)
       if (validateCaptcha(user_captcha_value) == true) {
         setDisabled(false)
@@ -38,6 +51,7 @@ const {createUser} = useAuth()
     else {
         alert('Captcha Does Not Match');
     }
+
     }
 
   return (
@@ -68,8 +82,8 @@ const {createUser} = useAuth()
           <label className="label">
           <LoadCanvasTemplate />
           </label>
-          <input type="text" ref={captchaRef} name="captcha" placeholder="enter captcha" className="input input-bordered" required />
-           <button onClick={handleCaptcha} className='btn btn-outline btn-xs'>validate</button>
+          <input onBlur={handleCaptcha} type="text" name="captcha" placeholder="enter captcha" className="input input-bordered" required />
+      
         </div>
         <div className="form-control mt-6">
           <input disabled={disabled} type="submit" value="Login" className="btn btn-primary"/>

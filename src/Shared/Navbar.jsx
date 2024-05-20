@@ -1,21 +1,39 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../Hook/useAuth";
+import { FaCartShopping } from "react-icons/fa6";
+import { useCart } from "../Hook/useCart";
 
 export const Navbar = () => {
-  const {user, logOut} = useAuth();
+  const { user, logOut } = useAuth();
+  const [cart] = useCart()
 
-    const navOptions = <>
-    <li><NavLink to="/">Home</NavLink></li>
-    <li><NavLink to="menu">Our Menu</NavLink></li>
-    <li><NavLink to="/order/:salad">Our Shop</NavLink></li>
+  const navOptions = (
+    <>
+      <li>
+        <NavLink to="/">Home</NavLink>
+      </li>
+      <li>
+        <NavLink to="menu">Our Menu</NavLink>
+      </li>
+      <li>
+        <NavLink to="/order/:salad">Our Shop</NavLink>
+      </li>
+      {user && (
+        <Link to="/dashboard/cart" className="indicator">
+          <span className="indicator-item badge badge-secondary">{cart.length}+</span>
+          <button className="mr-3">
+            <FaCartShopping />
+          </button>
+        </Link>
+      )}
     </>
+  );
 
-    const signOut = () =>{
-        logOut()
-        .then(()=>{})
-        .catch(err=> console.log(err.message))
-    }
-
+  const signOut = () => {
+    logOut()
+      .then(() => {})
+      .catch((err) => console.log(err.message));
+  };
 
   return (
     <div className="navbar fixed z-10 bg-black max-w-screen-xl bg-opacity-30 text-white">
@@ -41,27 +59,28 @@ export const Navbar = () => {
             tabIndex={0}
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
-           {navOptions}
+            {navOptions}
           </ul>
         </div>
         <a className="btn btn-ghost text-xl">Bistro Box</a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-         {navOptions}
-        </ul>
+        <ul className="menu menu-horizontal px-1">{navOptions}</ul>
       </div>
       <div className="navbar-end">
-      {
-      user ? 
-      <div>
-      <button onClick={signOut } className="btn"><NavLink>Log Out</NavLink></button>
-      </div> : 
-      
-      <div>
-      <button className="btn"><NavLink to="/login">Login</NavLink></button>
-       </div>
-    }
+        {user ? (
+          <div>
+            <button onClick={signOut} className="btn">
+              <NavLink>Log Out</NavLink>
+            </button>
+          </div>
+        ) : (
+          <div>
+            <button className="btn">
+              <NavLink to="/login">Login</NavLink>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

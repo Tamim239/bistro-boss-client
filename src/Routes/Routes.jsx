@@ -10,57 +10,82 @@ import { Secret } from "../Pages/Secret/Secret";
 import { Dashboard } from "../Layout/Dashboard";
 import { Cart } from "../Pages/Dashboard/Cart/Cart";
 import { AllUsers } from "../Pages/Dashboard/AllUsers/AllUsers";
-
-
+import { AddItems } from "../Pages/Dashboard/AddItems/AddItems";
+import { AdminRoute } from "./AdminRoute";
+import { ManageItems } from "../Pages/Dashboard/ManageItem/ManageItems";
 
 export const router = createBrowserRouter([
-    {
-      path: "/",
-      element:<MainLayout />,
+  {
+    path: "/",
+    element: <MainLayout />,
     //   errorElement: <ErrorPage />,
-      children: [
-        {
-          path: "/",
-          element: <Home /> ,
-        },
-        {
-          path: "menu",
-          element: <Menu /> ,
-        },
-        {
-          path: "/order/:category",
-          element: <Oder /> ,
-        },
-        {
-          path: "/login",
-          element: <Login /> ,
-        },
-        {
-          path: "/signUp",
-          element: <SignUp /> ,
-        },
-        {
-          path: "/secret",
-          element: <PrivateRoute><Secret /></PrivateRoute> ,
-        },
-      ],
-    },
-    {
-      path: "dashboard", 
-      element: <PrivateRoute><Dashboard /></PrivateRoute>,
-      children: [
-        {
-          path: 'cart',
-          element: <Cart />
-        },
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "menu",
+        element: <Menu />,
+      },
+      {
+        path: "/order/:category",
+        element: <Oder />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signUp",
+        element: <SignUp />,
+      },
+      {
+        path: "/secret",
+        element: (
+          <PrivateRoute>
+            <Secret />
+          </PrivateRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "dashboard",
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
+    children: [
+      // normal user
+      {
+        path: "cart",
+        element: <Cart />,
+      },
 
+      // admin routes
+      {
+        path: "addItems",
+        element: (
+          <AdminRoute>
+            <AddItems />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "manageItems",
+        element: <AdminRoute><ManageItems /></AdminRoute>
 
-// admin routes
-{
-path: "allUsers",
-element: <AllUsers />
-}
-
-      ]
-    }
-  ]);
+      },
+      {
+        path: "allUsers",
+        element: (
+          <AdminRoute>
+            <AllUsers />
+          </AdminRoute>
+        ),
+      },
+    ],
+  },
+]);

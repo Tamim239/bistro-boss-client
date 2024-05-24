@@ -3,10 +3,12 @@ import { RiMenuSearchLine } from "react-icons/ri";
 import { MdOutlineReviews } from "react-icons/md";
 import {NavLink, Outlet} from 'react-router-dom'
 import { useCart } from '../Hook/useCart';
+import { useAdmin } from '../Hook/useAdmin';
 export const Dashboard = () => {
 
     const [cart] = useCart()
-    const isAdmin = true;
+    const [isAdmin] = useAdmin();
+    console.log(isAdmin)
 
   return (
     <div className='flex'>

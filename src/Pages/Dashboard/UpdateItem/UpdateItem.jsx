@@ -1,62 +1,60 @@
+import { useLoaderData } from "react-router-dom"
+import { SectionTitle } from "../../../Components/SectionTitle/SectionTitle"
 import { useForm } from "react-hook-form";
-import { SectionTitle } from "../../../Components/SectionTitle/SectionTitle";
 import { FaUtensils } from "react-icons/fa6";
 import { useAxiosPublic } from "../../../Hook/useAxiosPublic";
 import { useAxiosSecure } from "../../../Hook/useAxiosSecure";
 import Swal from "sweetalert2";
 
-
 const image_api_key= import.meta.env.VITE_IMAGE_API_KEY
 const image_api_url = `https://api.imgbb.com/1/upload?key=${image_api_key}`
 
-export const AddItems = () => {
-  const { register, handleSubmit, reset } = useForm();
-  const axiosPublic = useAxiosPublic()
-  const axiosSecure = useAxiosSecure()
+export const UpdateItem = () => {
+    const { register, handleSubmit}=useForm();
+const {_id,name, price, category, recipe } = useLoaderData()
 
-  const onSubmit = async (data) => {
-    console.log(data);
+const axiosPublic = useAxiosPublic()
+const axiosSecure = useAxiosSecure()
+
+const onSubmit = async (data) =>{
+    console.log(data)
     const imageFile = {image: data.image[0]}
-// upload image in hosting side imgBB
-  const res = await axiosPublic.post(image_api_url, imageFile,{
-    headers:{
-      'content-type' : 'multipart/form-data'
+    // upload image in hosting side imgBB
+      const res = await axiosPublic.post(image_api_url, imageFile,{
+        headers:{
+          'content-type' : 'multipart/form-data'
+        }
+      })
+      console.log(res.data)
+      if(res.data.success){
+        const menuItem = {
+          name: data.name,
+          category: data.category,
+          price: parseFloat(data.price),
+          recipe: data.recipe,
+          image : res.data.data.display_url
+        }
+    const menuRes = await axiosSecure.patch(`/menu/${_id}`, menuItem)
+    console.log(menuRes.data)
+    if(menuRes.data.modifiedCount > 0){
+       // pop un success
+    //    reset()
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your have added successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
-  })
-  console.log(res.data)
-  if(res.data.success){
-    const menuItem = {
-      name: data.name,
-      category: data.category,
-      price: parseFloat(data.price),
-      recipe: data.recipe,
-      image : res.data.data.display_url
-    }
-const menuRes = await axiosSecure.post('/menu', menuItem)
-console.log(menuRes.data)
-if(menuRes.data.insertedId){
-   // pop un success
-   reset()
-  Swal.fire({
-    position: "center",
-    icon: "success",
-    title: "Your have added successfully",
-    showConfirmButton: false,
-    timer: 1500
-  });
+    
+      }
 }
-
-  }
-
-  };
 
   return (
     <div>
-      <SectionTitle
-        heading={"add on item"}
-        subHeading={"What's New?"}
-      ></SectionTitle>
-      <div>
+        <SectionTitle heading={"update an item"} subHeading={"Refresh Info"}></SectionTitle>
+        <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label className="form-control w-full my-6">
             <div className="label">
@@ -65,6 +63,7 @@ if(menuRes.data.insertedId){
             <input
               {...register("name", {required: true})}
               type="text"
+              defaultValue={name}
               placeholder="Recipe Name"
               className="input input-bordered w-full"
             />
@@ -80,7 +79,7 @@ if(menuRes.data.insertedId){
                 {...register("category", {required: true})}
                 className="select select-bordered w-full"
               >
-                <option disabled value="default">
+                <option disabled value={category}>
                   select a category?
                 </option>
                 <option value="salad">Salad</option>
@@ -99,6 +98,7 @@ if(menuRes.data.insertedId){
               <input
                 {...register("price", {required: true})}
                 type="number"
+                defaultValue={price}
                 placeholder="price"
                 className="input input-bordered w-full"
               />
@@ -108,7 +108,7 @@ if(menuRes.data.insertedId){
             <div className="label">
               <span className="label-text">Recipe Details</span>
             </div>
-            <textarea {...register('recipe', {required: true})}
+            <textarea defaultValue={recipe} {...register('recipe', {required: true})}
               className="textarea textarea-bordered h-24"
               placeholder="Bio"
             ></textarea>
@@ -125,6 +125,7 @@ if(menuRes.data.insertedId){
          </div>
         </form>
       </div>
+
     </div>
-  );
-};
+  )
+}

@@ -2,10 +2,12 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../Hook/useAuth";
 import { FaCartShopping } from "react-icons/fa6";
 import { useCart } from "../Hook/useCart";
+import { useAdmin } from "../Hook/useAdmin";
 
 export const Navbar = () => {
   const { user, logOut } = useAuth();
-  const [cart] = useCart()
+  const [cart] = useCart();
+  const [admin] = useAdmin()
 
   const navOptions = (
     <>
@@ -18,6 +20,19 @@ export const Navbar = () => {
       <li>
         <NavLink to="/order/:salad">Our Shop</NavLink>
       </li>
+
+       {
+        user && admin &&  <li>
+        <NavLink to="/dashboard/adminHome">Dashboard</NavLink>
+      </li>
+       }
+       {
+        user && !admin && <li>
+        <NavLink to="/dashboard/userHome">Dashboard</NavLink>
+      </li>
+       }
+
+
       {user && (
         <Link to="/dashboard/cart" className="indicator">
           <span className="indicator-item badge badge-secondary">{cart.length}+</span>
